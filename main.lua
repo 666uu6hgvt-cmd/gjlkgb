@@ -518,42 +518,30 @@ RunService.RenderStepped:Connect(function()
     if target and target.Character and target.Character:FindFirstChild("HumanoidRootPart") then camera.CFrame = CFrame.new(camera.CFrame.Position, target.Character.HumanoidRootPart.Position) end
 end)
 
-‏-- 10. ميزة تصفير أسعار متجر الماب وتخطي الحماية المحلية (Shop Prices Bypass)
-‏local freeShopActive = false
-‏createFeatureOption("🛒 تصفير أسعار متجر الماب", 10, nil, nil, nil, function(active)
-‏    freeShopActive = active
-‏    if active then
-‏        -- 1. كسر واجهات الأسعار محلياً وتغيير نصوصها لـ 0
-‏        task.spawn(function()
-‏            while freeShopActive do
-‏                pcall(function()
-‏                    for _, ui in pairs(localPlayer.PlayerGui:GetDescendants()) do
-‏                        if ui:IsA("TextLabel") or ui:IsA("TextBox") then
-‏                            local txt = ui.Text:lower()
-‏                            if txt:find("$") or txt:find("price") or txt:find("cost") or txt:find("cash") or txt:find("coins") then
-‏                                -- إذا كان نص يعبر عن سعر، نقوم بتصفيره بصرياً وعملياً
-‏                                ui.Text = "0"
-‏                            end
-‏                        end
-‏                    end
-‏                end)
-‏                task.wait(1)
-‏            end
-‏        end)
+‏-- كود تصفير أسعار متجر الماب وتخطي الحماية المحلية
+‏local function zeroShopPrices()
+‏    -- 1. تصفير نصوص الأسعار داخل واجهات اللعبة (PlayerGui) لكي تصبح مجانية بصرياً وعملياً
+‏    for _, ui in pairs(game:GetService("Players").LocalPlayer.PlayerGui:GetDescendants()) do
+‏        if ui:IsA("TextLabel") or ui:IsA("TextBox") then
+‏            local txt = ui.Text:lower()
+‏            if txt:find("$") or txt:find("price") or txt:find("cost") or txt:find("cash") or txt:find("coins") then
+‏                ui.Text = "0"
+‏            end
+‏        end
+‏    end
 ‏
-‏        -- 2. محاولة تخطي شروط الشراء البرمجية (للمابات ضعيفة الحماية)
-‏        pcall(function()
-‏            for _, obj in pairs(game:GetDescendants()) do
-‏                if obj:IsA("NumberValue") or obj:IsA("IntValue") then
-‏                    if obj.Name:lower():find("price") or obj.Name:lower():find("cost") then
-‏                        obj.Value = 0
-‏                    end
-‏                end
-‏            end
-‏        end)
-‏        print("🛒 جعفر الطيار: تم تفعيل تصفير أسعار الماب وتخطي أزرار الشراء!")
-‏    end
-‏end)
+‏    -- 2. البحث عن قيم الأسعار المخزنة داخل ملفات الماب وتصفيرها (NumberValue / IntValue)
+‏    for _, obj in pairs(game:GetDescendants()) do
+‏        if obj:IsA("NumberValue") or obj:IsA("IntValue") then
+‏            if obj.Name:lower():find("price") or obj.Name:lower():find("cost") then
+‏                pcall(function()
+‏                    obj.Value = 0
+‏                end)
+‏            end
+‏        end
+‏    end
+‏    print("🛒 جعفر الطيار: تم تصفير أسعار المتجر بنجاح!")
+‏end
 
 -------------------------------
 -- [6] قائمة استهداف لاعب معين
