@@ -517,6 +517,7 @@ RunService.RenderStepped:Connect(function()
     if not target or not target.Character or not target.Character:FindFirstChild("HumanoidRootPart") or target.Character.Humanoid.Health <= 0 then target = getClosestPlayerToCenter() end
     if target and target.Character and target.Character:FindFirstChild("HumanoidRootPart") then camera.CFrame = CFrame.new(camera.CFrame.Position, target.Character.HumanoidRootPart.Position) end
 end)
+
 ‏-- 10. ميزة تصفير أسعار متجر الماب وتخطي الحماية المحلية (Shop Prices Bypass)
 ‏local freeShopActive = false
 ‏createFeatureOption("🛒 تصفير أسعار متجر الماب", 10, nil, nil, nil, function(active)
