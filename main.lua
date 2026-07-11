@@ -517,32 +517,42 @@ RunService.RenderStepped:Connect(function()
     if not target or not target.Character or not target.Character:FindFirstChild("HumanoidRootPart") or target.Character.Humanoid.Health <= 0 then target = getClosestPlayerToCenter() end
     if target and target.Character and target.Character:FindFirstChild("HumanoidRootPart") then camera.CFrame = CFrame.new(camera.CFrame.Position, target.Character.HumanoidRootPart.Position) end
 end)
-
--- 10. ميزة الحصول على أدوات الماب مجاناً (Tool Stealer)
-createFeatureOption("🎁 فتح أدوات الماب مجاناً", 10, nil, nil, nil, function(active)
-    if active then
-        local backpack = localPlayer:WaitForChild("Backpack", 5)
-        if backpack then
-            local toolsFound = 0
-            -- البحث في جميع أنحاء الماب عن الأدوات المخزنة
-            for _, item in pairs(game:GetDescendants()) do
-                if item:IsA("Tool") then
-                    -- التأكد أن الأداة ليست ملكاً للاعب آخر حالياً
-                    if not item:IsDescendantOf(Players) and not backpack:FindFirstChild(item.Name) then
-                        if not (localPlayer.Character and localPlayer.Character:FindFirstChild(item.Name)) then
-                            pcall(function()
-                                local clone = item:Clone()
-                                clone.Parent = backpack
-                                toolsFound = toolsFound + 1
-                            end)
-                        end
-                    end
-                end
-            end
-            print("🚀 جعفر الطيار: تم جلب " .. tostring(toolsFound) .. " أداة إلى حقيبتك بنجاح!")
-        end
-    end
-end)
+‏-- 10. ميزة تصفير أسعار متجر الماب وتخطي الحماية المحلية (Shop Prices Bypass)
+‏local freeShopActive = false
+‏createFeatureOption("🛒 تصفير أسعار متجر الماب", 10, nil, nil, nil, function(active)
+‏    freeShopActive = active
+‏    if active then
+‏        -- 1. كسر واجهات الأسعار محلياً وتغيير نصوصها لـ 0
+‏        task.spawn(function()
+‏            while freeShopActive do
+‏                pcall(function()
+‏                    for _, ui in pairs(localPlayer.PlayerGui:GetDescendants()) do
+‏                        if ui:IsA("TextLabel") or ui:IsA("TextBox") then
+‏                            local txt = ui.Text:lower()
+‏                            if txt:find("$") or txt:find("price") or txt:find("cost") or txt:find("cash") or txt:find("coins") then
+‏                                -- إذا كان نص يعبر عن سعر، نقوم بتصفيره بصرياً وعملياً
+‏                                ui.Text = "0"
+‏                            end
+‏                        end
+‏                    end
+‏                end)
+‏                task.wait(1)
+‏            end
+‏        end)
+‏
+‏        -- 2. محاولة تخطي شروط الشراء البرمجية (للمابات ضعيفة الحماية)
+‏        pcall(function()
+‏            for _, obj in pairs(game:GetDescendants()) do
+‏                if obj:IsA("NumberValue") or obj:IsA("IntValue") then
+‏                    if obj.Name:lower():find("price") or obj.Name:lower():find("cost") then
+‏                        obj.Value = 0
+‏                    end
+‏                end
+‏            end
+‏        end)
+‏        print("🛒 جعفر الطيار: تم تفعيل تصفير أسعار الماب وتخطي أزرار الشراء!")
+‏    end
+‏end)
 
 -------------------------------
 -- [6] قائمة استهداف لاعب معين
