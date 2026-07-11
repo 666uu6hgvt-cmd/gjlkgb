@@ -518,30 +518,6 @@ RunService.RenderStepped:Connect(function()
     if target and target.Character and target.Character:FindFirstChild("HumanoidRootPart") then camera.CFrame = CFrame.new(camera.CFrame.Position, target.Character.HumanoidRootPart.Position) end
 end)
 
-‏-- كود تصفير أسعار متجر الماب وتخطي الحماية المحلية
-‏local function zeroShopPrices()
-‏    -- 1. تصفير نصوص الأسعار داخل واجهات اللعبة (PlayerGui) لكي تصبح مجانية بصرياً وعملياً
-‏    for _, ui in pairs(game:GetService("Players").LocalPlayer.PlayerGui:GetDescendants()) do
-‏        if ui:IsA("TextLabel") or ui:IsA("TextBox") then
-‏            local txt = ui.Text:lower()
-‏            if txt:find("$") or txt:find("price") or txt:find("cost") or txt:find("cash") or txt:find("coins") then
-‏                ui.Text = "0"
-‏            end
-‏        end
-‏    end
-‏
-‏    -- 2. البحث عن قيم الأسعار المخزنة داخل ملفات الماب وتصفيرها (NumberValue / IntValue)
-‏    for _, obj in pairs(game:GetDescendants()) do
-‏        if obj:IsA("NumberValue") or obj:IsA("IntValue") then
-‏            if obj.Name:lower():find("price") or obj.Name:lower():find("cost") then
-‏                pcall(function()
-‏                    obj.Value = 0
-‏                end)
-‏            end
-‏        end
-‏    end
-‏    print("🛒 جعفر الطيار: تم تصفير أسعار المتجر بنجاح!")
-‏end
 
 -------------------------------
 -- [6] قائمة استهداف لاعب معين
