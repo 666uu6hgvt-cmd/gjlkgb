@@ -377,28 +377,27 @@ RunService.Stepped:Connect(function()
     end
 end)
 -- 6. الفلينج (Fling) الثابت
+
 local TornadoActive = false
-TabBrook:CreateToggle({
-    Name = "تطير لاعبين🤣",
-    CurrentValue = false,
-    Callback = function(Value)
-        TornadoActive = Value
-        if TornadoActive then
-            task.spawn(function()
-                while TornadoActive do
-                    task.wait()
-                    local hrp = game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
-                    if hrp then
-                        hrp.RotVelocity = Vector3.new(0, 300, 0)
-                        hrp.Velocity = Vector3.new(hrp.Velocity.X, 0, hrp.Velocity.Z) 
-                    end
+createFeatureOption("🌪️ ميزة الإعصار (Tornado)", 10, nil, nil, nil, function(Value)
+    TornadoActive = Value
+    if TornadoActive then
+        task.spawn(function()
+            while TornadoActive do
+                task.wait()
+                local hrp = localPlayer.Character and localPlayer.Character:FindFirstChild("HumanoidRootPart")
+                if hrp then
+                    hrp.RotVelocity = Vector3.new(0, 300, 0)
+                    hrp.Velocity = Vector3.new(hrp.Velocity.X, 0, hrp.Velocity.Z) 
                 end
-            end)
-        else
-            local hrp = game.Players.LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
-            if hrp then hrp.RotVelocity = Vector3.new(0,0,0) end
-        end
-    end,
+            end
+        end)
+    else
+        local hrp = localPlayer.Character and localPlayer.Character:FindFirstChild("HumanoidRootPart")
+        if hrp then hrp.RotVelocity = Vector3.new(0,0,0) end
+    end
+end)
+
 
 -- 7. أداة التنقل
 local tpToolActive = false
