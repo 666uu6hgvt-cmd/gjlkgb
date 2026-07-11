@@ -377,10 +377,14 @@ RunService.Stepped:Connect(function()
     end
 end)
 
--- 6. الفلينج (Fling)
+-- 6. الفلينج (Fling) المطور
 local touchFlingActive = false
-createFeatureOption("💥 بلمسة يطير اللاعب (Fling)", 6, nil, nil, nil, function(active)
+local flingSpeed = 99999 -- القيمة الافتراضية العالية جداً للفلينج
+
+-- تعديل دالة createFeatureOption لتسمح بالتحكم بالرقم
+createFeatureOption("💥 بلمسة يطير اللاعب (Fling)", 6, 1000, 200000, 99999, function(active, val)
     touchFlingActive = active
+    flingSpeed = val -- هنا يتم تحديث السرعة بناءً على اختيارك من الواجهة
 end)
 
 RunService.PostSimulation:Connect(function()
@@ -390,7 +394,9 @@ RunService.PostSimulation:Connect(function()
             if part:IsA("BasePart") then part.CanCollide = false end
         end
         root.TrackedVelocity = Vector3.new(0, 0, 0)
-        root.RotVelocity = Vector3.new(0, 99999, 0)
+        
+        -- هنا تم وضع المتغير الجديد بدلاً من الرقم الثابت
+        root.RotVelocity = Vector3.new(0, flingSpeed, 0) 
         
         for _, p in pairs(Players:GetPlayers()) do
             if p ~= localPlayer and p.Character and p.Character:FindFirstChild("HumanoidRootPart") then
