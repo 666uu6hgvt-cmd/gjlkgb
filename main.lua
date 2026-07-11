@@ -377,34 +377,28 @@ RunService.Stepped:Connect(function()
     end
 end)
 -- 6. الفلينج (Fling) الثابت
-local touchFlingActive = false
-createFeatureOption("💥 بلمسة يطير اللاعب (Fling)", 6, nil, nil, nil, function(active)
-    touchFlingActive = active
-end)
-
-RunService.PostSimulation:Connect(function()
-    if touchFlingActive and localPlayer.Character and localPlayer.Character:FindFirstChild("HumanoidRootPart") then
-        local root = localPlayer.Character.HumanoidRootPart
-        for _, part in pairs(localPlayer.Character:GetChildren()) do
-            if part:IsA("BasePart") then part.CanCollide = false end
-        end
-        root.TrackedVelocity = Vector3.new(0, 0, 0)
-        
-        -- تم تعديل القيمة هنا لتصبح ثابتة كما طلبت تماماً
-        root.RotVelocity = Vector3.new(0, 300, 0)
-        
-        for _, p in pairs(Players:GetPlayers()) do
-            if p ~= localPlayer and p.Character and p.Character:FindFirstChild("HumanoidRootPart") then
-                local targetRoot = p.Character.HumanoidRootPart
-                local dist = (root.Position - targetRoot.Position).Magnitude
-                if dist < 5 then
-                    targetRoot.Velocity = Vector3.new(math.random(-500, 500), 40000, math.random(-500, 500))
-                    targetRoot.RotVelocity = Vector3.new(5000, 5000, 5000)
+local TornadoActive = false
+TabBrook:CreateToggle({
+    Name = "تطير لاعبين🤣",
+    CurrentValue = false,
+    Callback = function(Value)
+        TornadoActive = Value
+        if TornadoActive then
+            task.spawn(function()
+                while TornadoActive do
+                    task.wait()
+                    local hrp = game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
+                    if hrp then
+                        hrp.RotVelocity = Vector3.new(0, 300, 0)
+                        hrp.Velocity = Vector3.new(hrp.Velocity.X, 0, hrp.Velocity.Z) 
+                    end
                 end
-            end
+            end)
+        else
+            local hrp = game.Players.LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
+            if hrp then hrp.RotVelocity = Vector3.new(0,0,0) end
         end
-    end
-end)
+    end,
 
 -- 7. أداة التنقل
 local tpToolActive = false
