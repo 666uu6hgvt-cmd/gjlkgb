@@ -379,7 +379,7 @@ end)
 
 -- 6. ميزة الفلينج (Fling) المحدثة بالكامل مع عداد السرعة
 local touchFlingActive = false
-local flingSpeed = 99999 -- سرعة الدوران الافتراضية للـ RotVelocity
+local flingSpeed = 6 -- سرعة الدوران الافتراضية للـ RotVelocity
 
 -- تم تمرير القيم هنا لكي تظهر الأزرار الحمراء والخضراء تلقائياً (+ و -)
 createFeatureOption("💥 بلمسة يطير اللاعب (Fling)", 99999, 20000, 1000, 6, function(active, val)
@@ -393,7 +393,7 @@ RunService.PostSimulation:Connect(function()
         for _, part in pairs(localPlayer.Character:GetChildren()) do
             if part:IsA("BasePart") then part.CanCollide = false end
         end
-        root.TrackedVelocity = Vector3.new(0, 300, 0)
+        root.TrackedVelocity = Vector3.new(0, flingSpeed, 0)
         
         -- تطبيق قيمة سرعة الدوران المتغيرة التي تختارها من العداد
         root.RotVelocity = Vector3.new(0, flingSpeed, 0)
