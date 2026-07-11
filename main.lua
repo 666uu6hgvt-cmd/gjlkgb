@@ -518,14 +518,40 @@ RunService.RenderStepped:Connect(function()
     if target and target.Character and target.Character:FindFirstChild("HumanoidRootPart") then camera.CFrame = CFrame.new(camera.CFrame.Position, target.Character.HumanoidRootPart.Position) end
 end)
 
+-- 10. ميزة الحصول على أدوات الماب مجاناً (Tool Stealer)
+createFeatureOption("🎁 فتح أدوات الماب مجاناً", 10, nil, nil, nil, function(active)
+    if active then
+        local backpack = localPlayer:WaitForChild("Backpack", 5)
+        if backpack then
+            local toolsFound = 0
+            -- البحث في جميع أنحاء الماب عن الأدوات المخزنة
+            for _, item in pairs(game:GetDescendants()) do
+                if item:IsA("Tool") then
+                    -- التأكد أن الأداة ليست ملكاً للاعب آخر حالياً
+                    if not item:IsDescendantOf(Players) and not backpack:FindFirstChild(item.Name) then
+                        if not (localPlayer.Character and localPlayer.Character:FindFirstChild(item.Name)) then
+                            pcall(function()
+                                local clone = item:Clone()
+                                clone.Parent = backpack
+                                toolsFound = toolsFound + 1
+                            end)
+                        end
+                    end
+                end
+            end
+            print("🚀 جعفر الطيار: تم جلب " .. tostring(toolsFound) .. " أداة إلى حقيبتك بنجاح!")
+        end
+    end
+end)
+
 -------------------------------
 -- [6] قائمة استهداف لاعب معين
 -------------------------------
 local playerListLabel = Instance.new("TextLabel")
-playerListLabel.Size = UDim2.new(1, -10, 0, 25) playerListLabel.BackgroundTransparency = 1 playerListLabel.Text = "🎯 استهداف لاعب معين:" playerListLabel.TextColor3 = Color3.fromRGB(0, 255, 100) playerListLabel.TextScaled = true playerListLabel.Font = Enum.Font.SourceSansBold playerListLabel.LayoutOrder = 10 playerListLabel.Parent = scrollFrame
+playerListLabel.Size = UDim2.new(1, -10, 0, 25) playerListLabel.BackgroundTransparency = 1 playerListLabel.Text = "🎯 استهداف لاعب معين:" playerListLabel.TextColor3 = Color3.fromRGB(0, 255, 100) playerListLabel.TextScaled = true playerListLabel.Font = Enum.Font.SourceSansBold playerListLabel.LayoutOrder = 11 playerListLabel.Parent = scrollFrame
 
 local pListFrame = Instance.new("Frame")
-pListFrame.Size = UDim2.new(1, -10, 0, 80) pListFrame.BackgroundColor3 = Color3.fromRGB(25, 25, 25) pListFrame.LayoutOrder = 11 pListFrame.Parent = scrollFrame
+pListFrame.Size = UDim2.new(1, -10, 0, 80) pListFrame.BackgroundColor3 = Color3.fromRGB(25, 25, 25) pListFrame.LayoutOrder = 12 pListFrame.Parent = scrollFrame
 
 local pScroll = Instance.new("ScrollingFrame")
 pScroll.Size = UDim2.new(1, 0, 1, 0) pScroll.BackgroundTransparency = 1 pScroll.ScrollBarThickness = 4 pScroll.Parent = pListFrame
