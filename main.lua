@@ -376,15 +376,10 @@ RunService.Stepped:Connect(function()
         end
     end
 end)
-
--- 6. ميزة الفلينج (Fling) المحدثة بالكامل مع عداد السرعة
+-- 6. الفلينج (Fling) الثابت
 local touchFlingActive = false
-local flingSpeed = 6 -- سرعة الدوران الافتراضية للـ RotVelocity
-
--- تم تمرير القيم هنا لكي تظهر الأزرار الحمراء والخضراء تلقائياً (+ و -)
-createFeatureOption("💥 بلمسة يطير اللاعب (Fling)", 99999, 20000, 1000, 6, function(active, val)
+createFeatureOption("💥 بلمسة يطير اللاعب (Fling)", 6, nil, nil, nil, function(active)
     touchFlingActive = active
-    flingSpeed = val -- تحديث السرعة المتغيرة بناءً على العداد
 end)
 
 RunService.PostSimulation:Connect(function()
@@ -393,10 +388,10 @@ RunService.PostSimulation:Connect(function()
         for _, part in pairs(localPlayer.Character:GetChildren()) do
             if part:IsA("BasePart") then part.CanCollide = false end
         end
-        root.TrackedVelocity = Vector3.new(0, flingSpeed, 0)
+        root.TrackedVelocity = Vector3.new(0, 0, 0)
         
-        -- تطبيق قيمة سرعة الدوران المتغيرة التي تختارها من العداد
-        root.RotVelocity = Vector3.new(0, flingSpeed, 0)
+        -- تم تعديل القيمة هنا لتصبح ثابتة كما طلبت تماماً
+        root.RotVelocity = Vector3.new(0, 300, 0)
         
         for _, p in pairs(Players:GetPlayers()) do
             if p ~= localPlayer and p.Character and p.Character:FindFirstChild("HumanoidRootPart") then
