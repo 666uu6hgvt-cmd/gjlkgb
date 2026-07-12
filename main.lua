@@ -533,11 +533,11 @@ adminLabel.TextXAlignment = Enum.TextXAlignment.Left
 adminLabel.Font = Enum.Font.SourceSansBold
 adminLabel.Parent = adminRow
 
--- زر التشغيل الأخضر الصغير من اليمين
+-- زر التشغيل الريمبو الصغير من اليمين
 local runAdminBtn = Instance.new("TextButton")
 runAdminBtn.Size = UDim2.new(0, 70, 0, 30)
 runAdminBtn.Position = UDim2.new(0.75, 0, 0.15, 0)
-runAdminBtn.BackgroundColor3 = Color3.fromHSV((tick() % 5) / 5, 1, 1) -- لون ريمبو
+runAdminBtn.BackgroundColor3 = Color3.fromRGB(0, 180, 40)
 runAdminBtn.Text = "تشغيل"
 runAdminBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
 runAdminBtn.TextScaled = true
@@ -547,6 +547,13 @@ runAdminBtn.Parent = adminRow
 local adminCorner = Instance.new("UICorner")
 adminCorner.CornerRadius = UDim.new(0, 6)
 adminCorner.Parent = runAdminBtn
+
+-- 👇 أضف هذا هنا
+local RunService = game:GetService("RunService")
+
+RunService.RenderStepped:Connect(function()
+    runAdminBtn.BackgroundColor3 = Color3.fromHSV(tick() % 1, 1, 1)
+end)
 
 -- خط فاصل تحت الخيار
 local adminLine = Instance.new("Frame")
