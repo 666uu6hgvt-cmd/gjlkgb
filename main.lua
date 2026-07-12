@@ -552,7 +552,7 @@ adminCorner.Parent = runAdminBtn
 local RunService = game:GetService("RunService")
 
 RunService.RenderStepped:Connect(function()
-    runAdminBtn.BackgroundColor3 = Color3.fromHSV(tick() * 2) % 1, 1, 1)
+    runAdminBtn.BackgroundColor3 = Color3.fromHSV((tick() * 2) % 1, 1, 1)
 end)
 
 -- خط فاصل تحت الخيار
