@@ -524,7 +524,7 @@ adminRow.Parent = scrollFrame
 -- اسم السكربت من اليسار
 local adminLabel = Instance.new("TextLabel")
 adminLabel.Size = UDim2.new(0.4, 0, 1, 0)
-adminLabel.Position = UDim2.new(0.17, 0, 0, 0)
+adminLabel.Position = UDim2.new(0.18, 0, 0, 0)
 adminLabel.BackgroundTransparency = 1
 adminLabel.Text = "تحويل ادمن 🎃"
 adminLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
