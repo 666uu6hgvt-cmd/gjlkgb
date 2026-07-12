@@ -512,6 +512,59 @@ RunService.RenderStepped:Connect(function()
     if target and target.Character and target.Character:FindFirstChild("HumanoidRootPart") then camera.CFrame = CFrame.new(camera.CFrame.Position, target.Character.HumanoidRootPart.Position) end
 end)
 
+-------------------------------
+-- زر تحويل ادمن 🎃 (فوق تحديد اللاعب)
+-------------------------------
+local adminRow = Instance.new("Frame")
+adminRow.Size = UDim2.new(1, -5, 0, 45)
+adminRow.BackgroundTransparency = 1
+adminRow.LayoutOrder = 10 -- يضمن ظهوره فوق تحديد اللاعب مباشرة
+adminRow.Parent = scrollFrame
+
+-- اسم السكربت من اليسار
+local adminLabel = Instance.new("TextLabel")
+adminLabel.Size = UDim2.new(0.6, 0, 1, 0)
+adminLabel.Position = UDim2.new(0.05, 0, 0, 0)
+adminLabel.BackgroundTransparency = 1
+adminLabel.Text = "تحويل ادمن 🎃"
+adminLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+adminLabel.TextScaled = true
+adminLabel.TextXAlignment = Enum.TextXAlignment.Left
+adminLabel.Font = Enum.Font.SourceSansBold
+adminLabel.Parent = adminRow
+
+-- زر التشغيل الأخضر الصغير من اليمين
+local runAdminBtn = Instance.new("TextButton")
+runAdminBtn.Size = UDim2.new(0, 70, 0, 30)
+runAdminBtn.Position = UDim2.new(0.75, 0, 0.15, 0)
+runAdminBtn.BackgroundColor3 = Color3.fromRGB(0, 180, 40) -- لون أخضر
+runAdminBtn.Text = "تشغيل"
+runAdminBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+runAdminBtn.TextScaled = true
+runAdminBtn.Font = Enum.Font.SourceSansBold
+runAdminBtn.Parent = adminRow
+
+local adminCorner = Instance.new("UICorner")
+adminCorner.CornerRadius = UDim.new(0, 6)
+adminCorner.Parent = runAdminBtn
+
+-- خط فاصل تحت الخيار
+local adminLine = Instance.new("Frame")
+adminLine.Size = UDim2.new(1, 0, 0, 1)
+adminLine.Position = UDim2.new(0, 0, 1, 0)
+adminLine.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
+adminLine.Parent = adminRow
+
+-- عند الضغط على الزر يتم تشغيل سكربت الأدمن
+runAdminBtn.MouseButton1Click:Connect(function()
+    runAdminBtn.Text = "⏳..."
+    pcall(function()
+        loadstring(game:HttpGet('https://raw.githubusercontent.com/Edgeiy/infiniteyield/master/source'))()
+    end)
+    runAdminBtn.Text = "تم ✅"
+    task.wait(1.5)
+    runAdminBtn.Text = "تشغيل"
+end)
 
 -------------------------------
 -- [6] قائمة استهداف لاعب معين
