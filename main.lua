@@ -573,6 +573,232 @@ runAdminBtn.MouseButton1Click:Connect(function()
     runAdminBtn.Text = "تشغيل"
 end)
 
+
+-------------------------------
+-- زر حفض احداثيات 💾 (فوق تحديد اللاعب)
+-------------------------------
+local adminRow = Instance.new("Frame")
+adminRow.Size = UDim2.new(1, -5, 0, 45)
+adminRow.BackgroundTransparency = 1
+adminRow.LayoutOrder = 10 -- يضمن ظهوره فوق تحديد اللاعب مباشرة
+adminRow.Parent = scrollFrame
+
+-- اسم السكربت من اليسار
+local adminLabel = Instance.new("TextLabel")
+adminLabel.Size = UDim2.new(0.4, 0, 1, 0)
+adminLabel.Position = UDim2.new(0.19, 0, 0, 0)
+adminLabel.BackgroundTransparency = 1
+adminLabel.Text = "حفض احداثيات💾"
+adminLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+adminLabel.TextScaled = true
+adminLabel.TextXAlignment = Enum.TextXAlignment.Left
+adminLabel.Font = Enum.Font.SourceSansBold
+adminLabel.Parent = adminRow
+
+-- زر التشغيل الريمبو الصغير من اليمين
+local runAdminBtn = Instance.new("TextButton")
+runAdminBtn.Size = UDim2.new(0, 70, 0, 30)
+runAdminBtn.Position = UDim2.new(0.75, 0, 0.15, 0)
+runAdminBtn.BackgroundColor3 = Color3.fromRGB(0, 180, 40)
+runAdminBtn.Text = "تشغيل"
+runAdminBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+runAdminBtn.TextScaled = true
+runAdminBtn.Font = Enum.Font.SourceSansBold
+runAdminBtn.Parent = adminRow
+
+local adminCorner = Instance.new("UICorner")
+adminCorner.CornerRadius = UDim.new(0, 6)
+adminCorner.Parent = runAdminBtn
+
+-- 👇 أضف هذا هنا
+local RunService = game:GetService("RunService")
+
+RunService.RenderStepped:Connect(function()
+    runAdminBtn.BackgroundColor3 = Color3.fromHSV((tick() * 0.5) % 1, 1, 1)
+end)
+
+-- خط فاصل تحت الخيار
+local adminLine = Instance.new("Frame")
+adminLine.Size = UDim2.new(1, 0, 0, 1)
+adminLine.Position = UDim2.new(0, 0, 1, 0)
+adminLine.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
+adminLine.Parent = adminRow
+
+-- عند الضغط على الزر يتم تشغيل سكربت الأدمن
+runAdminBtn.MouseButton1Click:Connect(function()
+    runAdminBtn.Text = "⏳..."
+    pcall(function()
+        -- 🚀 سكربت مسجل ومُعيد الحركة التلقائي - حفظ تلقائي في ملف مستقل 🚀
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local localPlayer = Players.LocalPlayer
+
+local recordedPositions = {}
+local isRecording = false
+local startTime = 0
+local recordConnection = nil
+
+-- وظيفة للحصول على الشخصية والجزء الأساسي بشكل آمن
+local function getCharacterData()
+    local char = localPlayer.Character or localPlayer.CharacterAdded:Wait()
+    local root = char:WaitForChild("HumanoidRootPart", 5)
+    return char, root
+end
+
+-- إنشاء واجهة الزر العائم
+local targetParent = nil
+local success, coreGui = pcall(function() return game:GetService("CoreGui") end)
+if success and coreGui then targetParent = coreGui else targetParent = localPlayer:WaitForChild("PlayerGui") end
+
+if targetParent:FindFirstChild("MovementRecorderGUI") then targetParent["MovementRecorderGUI"]:Destroy() end
+
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "MovementRecorderGUI"
+screenGui.ResetOnSpawn = false
+screenGui.Parent = targetParent
+
+local mainButton = Instance.new("TextButton")
+mainButton.Size = UDim2.new(0, 160, 0, 50)
+mainButton.Position = UDim2.new(0.5, -80, 0.8, 0)
+mainButton.BackgroundColor3 = Color3.fromRGB(40, 180, 40)
+mainButton.Text = "تشغيل (بدء التسجيل)"
+mainButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+mainButton.TextScaled = true
+mainButton.Font = Enum.Font.SourceSansBold
+mainButton.Active = true
+mainButton.Parent = screenGui
+
+local corner = Instance.new("UICorner")
+corner.CornerRadius = UDim.new(0, 10)
+corner.Parent = mainButton
+
+-- نظام السحب والتحريك للزر على شاشة الموبايل أو البي سي
+local dragInput, dragStart, startPosButton
+local dragActive = false
+
+mainButton.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+        dragActive = true
+        dragStart = input.Position
+        startPosButton = mainButton.Position
+        input.Changed:Connect(function()
+            if input.UserInputState == Enum.UserInputState.End then dragActive = false end
+        end)
+    end
+end)
+
+mainButton.InputChanged:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+        dragInput = input
+    end
+end)
+
+game:GetService("UserInputService").InputChanged:Connect(function(input)
+    if input == dragInput and dragActive then
+        local delta = input.Position - dragStart
+        mainButton.Position = UDim2.new(startPosButton.X.Scale, startPosButton.X.Offset + delta.X, startPosButton.Y.Scale, startPosButton.Y.Offset + delta.Y)
+    end
+end)
+
+-- دالة توليد كود الـ Lua الجاهز للنسخ
+local function generateLuaCode(positions)
+    local code = "-- 📑 كود مسار الحركة المسجل الجاهز للاستخدام\n"
+    code = code .. "local path = {\n"
+    for _, cf in ipairs(positions) do
+        local components = {cf:GetComponents()}
+        local compString = table.concat(components, ", ")
+        code = code .. string.format("    CFrame.new(%s),\n", compString)
+    end
+    code = code .. "}\n\n"
+    code = code .. "local character = game:GetService('Players').LocalPlayer.Character\n"
+    code = code .. "local root = character and character:FindFirstChild('HumanoidRootPart')\n"
+    code = code .. "if root then\n"
+    code = code .. "    for _, cf in ipairs(path) do\n"
+    code = code .. "        root.CFrame = cf\n"
+    code = code .. "        task.wait(0.03)\n"
+    code = code .. "    end\n"
+    code = code .. "end\n"
+    return code
+end
+
+-- دالة إعادة تكرار الحركة
+local function replayMovement(positions)
+    if #positions == 0 then return end
+    task.spawn(function()
+        local _, rootPart = getCharacterData()
+        for _, cf in ipairs(positions) do
+            if rootPart then
+                rootPart.CFrame = cf
+                task.wait(0.03)
+            else
+                break
+            end
+        end
+    end)
+end
+
+-- تشغيل وإيقاف النظام عند الضغط
+mainButton.MouseButton1Click:Connect(function()
+    local _, rootPart = getCharacterData()
+    if not rootPart then return end
+
+    if not isRecording then
+        -- 🟢 بدء التسجيل
+        isRecording = true
+        recordedPositions = {}
+        startTime = os.clock()
+        mainButton.BackgroundColor3 = Color3.fromRGB(40, 180, 40)
+        
+        recordConnection = RunService.Heartbeat:Connect(function()
+            local _, currentRoot = getCharacterData()
+            if currentRoot then
+                table.insert(recordedPositions, currentRoot.CFrame)
+                local duration = os.clock() - startTime
+                mainButton.Text = string.format("تسجيل.. (%.1f ثانية)", duration)
+            end
+        end)
+    else
+        -- 🔴 إيقاف التسجيل
+        isRecording = false
+        if recordConnection then recordConnection:Disconnect() end
+        
+        mainButton.BackgroundColor3 = Color3.fromRGB(180, 40, 40)
+        
+        -- إنشاء الكود النهائي
+        local finalCode = generateLuaCode(recordedPositions)
+        
+        -- 💾 حفظ الملف تلقائياً في مجلد الـ workspace الخاص بالمشغل
+        if writefile then
+            writefile("احداثيات.lua", finalCode)
+            mainButton.Text = "تم حفظ الملف وتنزيله!"
+        else
+            -- في حال كان المشغل لا يدعم حفظ الملفات، سيقوم بالنسخ كبديل احتياطي
+            if setclipboard then
+                setclipboard(finalCode)
+                mainButton.Text = "لم يدعم الحفظ! تم النسخ بدلاً منه"
+            elseif toclipboard then
+                toclipboard(finalCode)
+                mainButton.Text = "لم يدعم الحفظ! تم النسخ بدلاً منه"
+            else
+                mainButton.Text = "المشغل لا يدعم الحفظ أو النسخ!"
+            end
+        end
+        
+        -- ترجيع الحركة فوراً للاعب
+        replayMovement(recordedPositions)
+        
+        -- إعادة ضبط الزر بعد 3 ثوانٍ
+        task.wait(3)
+        mainButton.BackgroundColor3 = Color3.fromRGB(40, 40, 180)
+        mainButton.Text = "تسجيل مسار جديد"
+    end
+end)
+    end)
+    runAdminBtn.Text = "تم ✅"
+    task.wait(1.5)
+    runAdminBtn.Text = "تشغيل"
+end)
+
 -------------------------------
 -- [6] قائمة استهداف لاعب معين
 -------------------------------
