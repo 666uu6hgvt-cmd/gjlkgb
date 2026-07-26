@@ -512,38 +512,47 @@ RunService.RenderStepped:Connect(function()
     if target and target.Character and target.Character:FindFirstChild("HumanoidRootPart") then camera.CFrame = CFrame.new(camera.CFrame.Position, target.Character.HumanoidRootPart.Position) end
 end)
 
--- [إضافة] ميزة التريجر بوت الذكي (Auto Shoot)
-local autoShootActive = true -- فعلها أو خلها بخيار في القائمة
-local raycastParams = RaycastParams.new()
-raycastParams.FilterType = Enum.RaycastFilterType.Blacklist
+-------------------------------
+-- [9.5] ميزة التريجر بوت (Auto Shoot)
+-------------------------------
+local triggerBotActive = false
+local shootDelay = 0.1 -- تأخير بسيط عشان ما يبين إنك هكر
 
-RunService.RenderStepped:Connect(function()
-    if aimbotActive and autoShootActive then
-        local target = selectedTargetPlayer
-        -- إذا ما فيه لاعب محدد، نبحث عن أقرب واحد
-        if not target or not target.Character or not target.Character:FindFirstChild("ايم بوت مطور☠️") then
-            target = getClosestPlayerToCenter() 
-        end
+createFeatureOption("🔫 تريجر بوت (ضرب تلقائي)", 10, 0, 1, 0, function(active, val)
+    triggerBotActive = active
+    -- جعل القيمة الممررة هي التأخير (مثلاً من 0 إلى 1 ثانية)
+    shootDelay = val or 0.1
+end)
 
-        if target and target.Character and target.Character:FindFirstChild("ايم بوت مطور☠️") then
-            local char = target.Character
-            local head = char:FindFirstChild("Head")
-            if not head then return end
-
-            -- 1. التأكد أن اللاعب "مرئي" وليس خلف جدار
-            local origin = camera.CFrame.Position
-            local direction = (head.Position - origin).Unit * 500
-            raycastParams.FilterDescendantsInstances = {localPlayer.Character, camera}
+-- نظام الفحص والضرب التلقائي
+task.spawn(function()
+    while task.wait(0.01) do -- فحص سريع جداً
+        if triggerBotActive and localPlayer.Character then
+            local target = selectedTargetPlayer or getClosestPlayerToCenter()
             
-            local result = Workspace:Raycast(origin, direction, raycastParams)
-
-            -- 2. إذا كان أول شيء يلمسه الشعاع هو جزء من جسم الخصم
-            if result and result.Instance:IsDescendantOf(char) then
-                -- 3. محاكاة الضغط (إطلاق النار أو الضرب)
-                -- ملاحظة: نفحص إذا كان اللاعب ماسك أداة (سلاح/سيف)
-                local tool = localPlayer.Character:FindFirstChildOfClass("Tool")
-                if tool then
-                    tool:Activate() -- يخلي الأداة تضرب تلقائياً
+            if target and target.Character and target.Character:FindFirstChild("HumanoidRootPart") then
+                local char = target.Character
+                local head = char:FindFirstChild("Head")
+                
+                if head then
+                    -- إرسال شعاع من الكاميرا لراس الخصم للتأكد إنه مو ورا جدار
+                    local origin = camera.CFrame.Position
+                    local direction = (head.Position - origin).Unit * 1000
+                    
+                    local rayParams = RaycastParams.new()
+                    rayParams.FilterDescendantsInstances = {localPlayer.Character, camera}
+                    rayParams.FilterType = Enum.RaycastFilterType.Blacklist
+                    
+                    local result = Workspace:Raycast(origin, direction, rayParams)
+                    
+                    -- إذا الشعاع صدم في الخصم مباشرة (يعني طلع من ورا الجدار)
+                    if result and result.Instance:IsDescendantOf(char) then
+                        local tool = localPlayer.Character:FindFirstChildOfClass("Tool")
+                        if tool then
+                            task.wait(shootDelay) -- التأخير اللي حددته
+                            tool:Activate() -- اضرب!
+                        end
+                    end
                 end
             end
         end
